@@ -1,4 +1,4 @@
--- SKIDDED BY SIGMA @rizzify101 | Accurate Dinosaur, Primal & Zen Egg Support
+-- SKIDDED BY Neobest @neobest1 | Accurate Dinosaur, Primal & Zen Egg Support
 local Players = game:GetService("Players")
 local PlayerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -136,4 +136,5 @@ button.MouseButton1Click:Connect(function()
 	randomizeESP()
 	button.Text = "Randomize ESP"
 	cooling = false
+
 end)
