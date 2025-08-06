@@ -50,7 +50,7 @@ launchBtn.MouseButton1Click:Connect(function()
     launchBtn.Text = "Loading..."
     launchBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
     pcall(function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/ZENHUBV1/GrowaGardenn/refs/heads/main/Pet.txt'))()
+    
     end)
     wait(1)
     launchBtn.Text = "Launch Pet Tool"
