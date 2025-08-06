@@ -1,58 +1,101 @@
--- UI Launcher for Grow a Garden Pet Script
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local PlayerGui = player:WaitForChild("PlayerGui")
+local Workspace = game:GetService("Workspace")
 
--- GUI Setup
-local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "PetLauncherUI"
-gui.ResetOnSpawn = false
+local eggToPets = {
+    ["Common Egg"] = {"Dog", "Golden Lab", "Bunny"},
+    ["Uncommon Egg"] = {"Black Bunny", "Cat", "Chicken", "Deer"},
+    ["Rare Egg"] = {"Monkey", "Orange Tabby", "Pig", "Rooster", "Spotted Deer"},
+    ["Legendary Egg"] = {"Cow", "Silver Monkey", "Sea Otter", "Turtle", "Polar Bear"},
+    ["Mythical Egg"] = {"Grey Mouse", "Brown Mouse", "Squirrel", "Red Giant Ant", "Red Fox"},
+    ["Bug Egg"] = {"Snail", "Giant Ant", "Caterpillar", "Praying Mantis", "Dragonfly"},
+    ["Bee Egg"] = {"Bee", "Honey Bee", "Bear Bee", "Petal Bee", "Queen Bee"},
+    ["Paradise Egg"] = {"Ostrich", "Peacock", "Capybara", "Scarlet Macaw", "Mimic Octopus"},
+    ["Oasis Egg"] = {"Meerkat", "Sand Snake", "Axolotl", "Hyacinth Macaw"},
+    ["Dinosaur Egg"] = {"Pterodactyl", "Raptor", "Triceratops", "Stegosaurus", "Brontosaurus", "T-Rex"},
+    ["Primal Egg"] = {"Parasaurolophus", "Iguanodon", "Pachycephalosaurus", "Dilophosaurus", "Ankylosaurus", "Spinosaurus"},
+    ["Zen Egg"] = {"Shiba Inu", "Nihonzaru", "Tanuki", "Tanchozuru", "Kappa", "Kitsune"}
+}
 
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 250, 0, 130)
-frame.Position = UDim2.new(0.37, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+local weightedChances = {
+    ["Dinosaur Egg"] = {
+        {"Pterodactyl", 3},
+        {"Raptor", 35},
+        {"Triceratops", 32.5},
+        {"Stegosaurus", 28},
+        {"Brontosaurus", 1},
+        {"T-Rex", 0.5}
+    },
+    ["Primal Egg"] = {
+        {"Parasaurolophus", 35},
+        {"Iguanodon", 32.5},
+        {"Pachycephalosaurus", 28},
+        {"Dilophosaurus", 3},
+        {"Ankylosaurus", 1},
+        {"Spinosaurus", 0.5}
+    },
+    ["Zen Egg"] = {
+        {"Shiba Inu", 40},
+        {"Nihonzaru", 32},
+        {"Tanuki", 20.82},
+        {"Tanchozuru", 4.6},
+        {"Kappa", 3.5},
+        {"Kitsune", 0.08}
+    }
+}
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundTransparency = 1
-title.Text = "🐾 Pet Tool Launcher"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextColor3 = Color3.new(1, 1, 1)
+local function createESP(part, name)
+    if not part then return end
+    local existing = part:FindFirstChild("EggESP")
+    if existing then existing:Destroy() end
 
-local launchBtn = Instance.new("TextButton", frame)
-launchBtn.Size = UDim2.new(0.9, 0, 0, 40)
-launchBtn.Position = UDim2.new(0.05, 0, 0.45, 0)
-launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-launchBtn.Text = "Launch Pet Tool"
-launchBtn.Font = Enum.Font.GothamBold
-launchBtn.TextSize = 16
-launchBtn.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", launchBtn).CornerRadius = UDim.new(0, 10)
+    local gui = Instance.new("BillboardGui", part)
+    gui.Name = "EggESP"
+    gui.Size = UDim2.new(0, 120, 0, 40)
+    gui.StudsOffset = Vector3.new(0, 2.5, 0)
+    gui.AlwaysOnTop = true
 
-local info = Instance.new("TextLabel", frame)
-info.Size = UDim2.new(1, 0, 0, 30)
-info.Position = UDim2.new(0, 0, 0.82, 0)
-info.BackgroundTransparency = 1
-info.Text = "Click to load script"
-info.Font = Enum.Font.Gotham
-info.TextSize = 14
-info.TextColor3 = Color3.fromRGB(180, 180, 180)
+    local label = Instance.new("TextLabel", gui)
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.TextStrokeTransparency = 0.4
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = true
+end
 
--- Click Behavior
-launchBtn.MouseButton1Click:Connect(function()
-    launchBtn.Text = "Loading..."
-    launchBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-    pcall(function()
-    
-    end)
-    wait(1)
-    launchBtn.Text = "Launch Pet Tool"
-    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-end)
+local function getRandomPet(eggName)
+    local pets = eggToPets[eggName]
+    if not pets then return nil end
+
+    local weighted = weightedChances[eggName]
+    if weighted then
+        local roll = math.random() * 100
+        local sum = 0
+        for _, entry in ipairs(weighted) do
+            sum += entry[2]
+            if roll <= sum then
+                return entry[1]
+            end
+        end
+    end
+
+    return pets[math.random(1, #pets)]
+end
+
+local function applyESP()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") and eggToPets[obj.Name] then
+            local part = obj:FindFirstChildWhichIsA("BasePart")
+            if part then
+                local petName = getRandomPet(obj.Name)
+                if petName then
+                    createESP(part, petName)
+                end
+            end
+        end
+    end
+end
+
+-- Run the ESP
+applyESP()
