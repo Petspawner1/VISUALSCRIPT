@@ -1,120 +1,61 @@
+-- Launcher UI for Randomizer Script
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
--- 🐣 Pet List
-local petTable = {
-    ["Common Egg"] = { "Dog", "Bunny", "Golden Lab" },
-    ["Uncommon Egg"] = { "Chicken", "Black Bunny", "Cat", "Deer" },
-    ["Rare Egg"] = { "Pig", "Monkey", "Rooster", "Orange Tabby", "Spotted Deer" }
-}
-["Paradise Egg"] = { "Mimic octopos", "Ostrich", "Macaw" },
--- 💠 UI Setup
-local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "PetSimulatorUI"
+-- Main Screen GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "RandomizerLauncher"
 gui.ResetOnSpawn = false
+gui.Parent = PlayerGui
 
+-- Frame Setup
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 200)
-frame.Position = UDim2.new(0.35, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-frame.BorderSizePixel = 0
+frame.Size = UDim2.new(0, 240, 0, 120)
+frame.Position = UDim2.new(0.4, 0, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 frame.Active = true
 frame.Draggable = true
+frame.BorderSizePixel = 0
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 
+-- Title Label
 local title = Instance.new("TextLabel", frame)
-title.Text = "🐣 Visual Pet Hatch Simulator"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🎮 Randomizer Tool"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundTransparency = 1
-title.Size = UDim2.new(1, 0, 0, 30)
 
--- 🥚 Egg Type Input
-local eggInput = Instance.new("TextBox", frame)
-eggInput.PlaceholderText = "Enter Egg Type (e.g. Common Egg)"
-eggInput.Text = ""
-eggInput.Font = Enum.Font.Gotham
-eggInput.TextSize = 14
-eggInput.TextColor3 = Color3.new(1, 1, 1)
-eggInput.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
-eggInput.BorderSizePixel = 0
-eggInput.Position = UDim2.new(0.05, 0, 0.2, 0)
-eggInput.Size = UDim2.new(0.9, 0, 0, 30)
-Instance.new("UICorner", eggInput).CornerRadius = UDim.new(0, 6)
+-- Launch Button
+local launchBtn = Instance.new("TextButton", frame)
+launchBtn.Size = UDim2.new(0.9, 0, 0, 35)
+launchBtn.Position = UDim2.new(0.05, 0, 0.4, 0)
+launchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 140)
+launchBtn.Text = "Launch Randomizer"
+launchBtn.Font = Enum.Font.GothamBold
+launchBtn.TextSize = 16
+launchBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", launchBtn).CornerRadius = UDim.new(0, 8)
 
--- 🐾 Hatch Result
-local result = Instance.new("TextLabel", frame)
-result.Text = "Pet: [None]"
-result.Font = Enum.Font.GothamBold
-result.TextSize = 14
-result.TextColor3 = Color3.fromRGB(255, 255, 160)
-result.BackgroundTransparency = 1
-result.Position = UDim2.new(0.05, 0, 0.4, 0)
-result.Size = UDim2.new(0.9, 0, 0, 20)
-result.TextScaled = true
-result.TextWrapped = true
+-- Instruction Label
+local info = Instance.new("TextLabel", frame)
+info.Size = UDim2.new(1, 0, 0, 30)
+info.Position = UDim2.new(0, 0, 0.75, 0)
+info.BackgroundTransparency = 1
+info.Text = "Drag to move | Click button to load"
+info.Font = Enum.Font.Gotham
+info.TextSize = 14
+info.TextColor3 = Color3.fromRGB(200, 200, 200)
 
--- 🟩 Hatch Button
-local hatchBtn = Instance.new("TextButton", frame)
-hatchBtn.Text = "🎉 Hatch Pet"
-hatchBtn.Font = Enum.Font.GothamBold
-hatchBtn.TextSize = 14
-hatchBtn.TextColor3 = Color3.new(1, 1, 1)
-hatchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
-hatchBtn.BorderSizePixel = 0
-hatchBtn.Position = UDim2.new(0.05, 0, 0.6, 0)
-hatchBtn.Size = UDim2.new(0.9, 0, 0, 30)
-Instance.new("UICorner", hatchBtn).CornerRadius = UDim.new(0, 8)
-
--- 🔁 Auto Hatch Toggle
-local autoToggle = Instance.new("TextButton", frame)
-autoToggle.Text = "🔁 Auto Hatch: OFF"
-autoToggle.Font = Enum.Font.GothamBold
-autoToggle.TextSize = 14
-autoToggle.TextColor3 = Color3.new(1, 1, 1)
-autoToggle.BackgroundColor3 = Color3.fromRGB(120, 60, 200)
-autoToggle.BorderSizePixel = 0
-autoToggle.Position = UDim2.new(0.05, 0, 0.8, 0)
-autoToggle.Size = UDim2.new(0.9, 0, 0, 25)
-Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0, 8)
-
--- 🔁 Auto Hatch Logic
-local autoHatch = false
-
-autoToggle.MouseButton1Click:Connect(function()
-	autoHatch = not autoHatch
-	autoToggle.Text = autoHatch and "🔁 Auto Hatch: ON" or "🔁 Auto Hatch: OFF"
-end)
-
--- 🎲 Hatch Function
-local function hatch()
-	local eggType = eggInput.Text
-	local pets = petTable[eggType]
-	if pets then
-		local pet = pets[math.random(1, #pets)]
-		result.Text = "Pet: " .. pet
-		result.TextTransparency = 1
-		local tween = TweenService:Create(result, TweenInfo.new(0.4), { TextTransparency = 0 })
-		tween:Play()
-	else
-		result.Text = "Invalid Egg Type!"
-	end
-end
-
--- 🖱️ Manual Hatch
-hatchBtn.MouseButton1Click:Connect(hatch)
-
--- 🔁 Auto Hatch Loop
-task.spawn(function()
-	while true do
-		if autoHatch then
-			hatch()
-		end
-		task.wait(2.5)
-	end
+-- Launch Logic
+launchBtn.MouseButton1Click:Connect(function()
+    -- Play click animation
+    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 160)
+    task.wait(0.15)
+    launchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 140)
+    -- Run loadstring script
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ThunderHubz/RANDOMIZER/refs/heads/main/Release.lua"))()
 end)
