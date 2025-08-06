@@ -1,93 +1,120 @@
--- Safe Egg Randomizer with UI (Clean, No Stealer)
+from pathlib import Path
+
+# New UI script for Grow a Garden - Egg ESP Toggle GUI
+new_ui_script = '''-- Grow a Garden Egg ESP Toggle UI (Zen, Bug, Dino included)
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local PlayerGui = player:WaitForChild("PlayerGui")
+local playerGui = player:WaitForChild("PlayerGui")
 
-local eggs = {
-    ["Dinosaur Egg"] = { "Raptor", "T-rex", "triceratops" },
+local eggToPets = {
     ["Common Egg"] = { "Dog", "Bunny", "Golden Lab" },
-    ["Uncommon Egg"] = { "Chicken", "Black Bunny", "Cat", "Deer" },
-    ["Rare Egg"] = { "Pig", "Monkey", "Rooster", "Orange Tabby", "Spotted Deer" },
-    ["Legendary Egg"] = { "Cow", "Polar Bear", "Sea Otter", "Turtle", "Silver Monkey" },
-    ["Mythical Egg"] = { "Grey Mouse", "Squirrel", "Kitsune", "Red Fox" }
+    ["Uncommon Egg"] = { "Chicken", "Cat", "Deer" },
+    ["Rare Egg"] = { "Pig", "Monkey", "Spotted Deer" },
+    ["Legendary Egg"] = { "Polar Bear", "Sea Otter", "Silver Monkey" },
+    ["Zen Egg"] = { "Shiba Inu", "Tanuki", "Kitsune", "Kappa", "Nihonzaru" },
+    ["Bug Egg"] = { "Giant Ant", "Caterpillar", "Firefly", "Butterfly" },
+    ["Dinosaur Egg"] = { "T-Rex", "Triceratops", "Velociraptor", "Brachiosaurus", "Stegosaurus" }
 }
 
 -- UI Setup
-local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "SafeEggHatchUI"
+local gui = Instance.new("ScreenGui", playerGui)
+gui.Name = "EggESP_UI"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 170)
-frame.Position = UDim2.new(0.35, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.05, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
 
 local title = Instance.new("TextLabel", frame)
-title.Text = "🐣 Safe Egg Randomizer"
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextColor3 = Color3.new(1, 1, 1)
+title.Text = "🥚 Egg ESP Toggle"
 title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
 
--- Egg input
-local eggBox = Instance.new("TextBox", frame)
-eggBox.PlaceholderText = "Enter Egg Type (e.g. Rare Egg)"
-eggBox.Text = ""
-eggBox.Size = UDim2.new(0.9, 0, 0, 30)
-eggBox.Position = UDim2.new(0.05, 0, 0.25, 0)
-eggBox.Font = Enum.Font.Gotham
-eggBox.TextSize = 14
-eggBox.TextColor3 = Color3.new(1, 1, 1)
-eggBox.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
-eggBox.BorderSizePixel = 0
-Instance.new("UICorner", eggBox).CornerRadius = UDim.new(0, 6)
+local toggleBtn = Instance.new("TextButton", frame)
+toggleBtn.Size = UDim2.new(0.9, 0, 0, 40)
+toggleBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
+toggleBtn.Text = "Toggle ESP [ON]"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 14
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 6)
 
--- Result label
-local result = Instance.new("TextLabel", frame)
-result.Text = "Hatch Result: [None]"
-result.Size = UDim2.new(0.9, 0, 0, 30)
-result.Position = UDim2.new(0.05, 0, 0.53, 0)
-result.Font = Enum.Font.GothamBold
-result.TextSize = 14
-result.TextColor3 = Color3.fromRGB(255, 255, 160)
-result.BackgroundTransparency = 1
-result.TextWrapped = true
-result.TextScaled = true
+-- ESP functions
+local espEnabled = true
+local function createESP(part, labelText)
+    if not part or part:FindFirstChild("EggESP") then return end
 
--- Hatch button
-local hatchBtn = Instance.new("TextButton", frame)
-hatchBtn.Text = "🎉 Hatch Pet"
-hatchBtn.Size = UDim2.new(0.9, 0, 0, 35)
-hatchBtn.Position = UDim2.new(0.05, 0, 0.75, 0)
-hatchBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
-hatchBtn.Font = Enum.Font.GothamBold
-hatchBtn.TextSize = 16
-hatchBtn.TextColor3 = Color3.new(1, 1, 1)
-hatchBtn.BorderSizePixel = 0
-Instance.new("UICorner", hatchBtn).CornerRadius = UDim.new(0, 8)
+    local billboard = Instance.new("BillboardGui", part)
+    billboard.Name = "EggESP"
+    billboard.Adornee = part
+    billboard.Size = UDim2.new(0, 120, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
 
--- Hatch Logic
-local function hatchEgg(eggType)
-    local pets = eggs[eggType]
-    if pets then
-        local pet = pets[math.random(1, #pets)]
-        result.TextTransparency = 1
-        result.Text = "Hatch Result: " .. pet
-        TweenService:Create(result, TweenInfo.new(0.5), { TextTransparency = 0 }):Play()
-    else
-        result.Text = "Invalid Egg Type."
+    local text = Instance.new("TextLabel", billboard)
+    text.Size = UDim2.new(1, 0, 1, 0)
+    text.BackgroundTransparency = 1
+    text.Text = labelText
+    text.TextColor3 = Color3.new(1, 1, 1)
+    text.TextStrokeTransparency = 0.5
+    text.Font = Enum.Font.GothamBold
+    text.TextScaled = true
+end
+
+local function clearESP()
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj:FindFirstChild("EggESP") then
+            obj.EggESP:Destroy()
+        end
     end
 end
 
--- Click to hatch
-hatchBtn.MouseButton1Click:Connect(function()
-    hatchEgg(eggBox.Text)
+local function applyESP()
+    if not espEnabled then return end
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") and eggToPets[obj.Name] then
+            local part = obj:FindFirstChildWhichIsA("BasePart")
+            if part then
+                local petName = eggToPets[obj.Name][math.random(1, #eggToPets[obj.Name])]
+                createESP(part, obj.Name .. " → " .. petName)
+            end
+        end
+    end
+end
+
+-- Toggle button logic
+toggleBtn.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    toggleBtn.Text = espEnabled and "Toggle ESP [ON]" or "Toggle ESP [OFF]"
+    toggleBtn.BackgroundColor3 = espEnabled and Color3.fromRGB(0, 170, 100) or Color3.fromRGB(150, 50, 50)
+    clearESP()
+    if espEnabled then
+        applyESP()
+    end
 end)
+
+-- Auto-update
+RunService.Stepped:Connect(function()
+    if espEnabled then
+        applyESP()
+    end
+end)
+'''
+
+# Save the new UI script
+ui_path = Path("/mnt/data/GAG_EggESP_UI_Toggle.lua")
+ui_path.write_text(new_ui_script)
+
+ui_path.name
