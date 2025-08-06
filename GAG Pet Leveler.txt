@@ -1,69 +1,61 @@
+-- UI to Launch Pet Age Setter Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local PlayerGui = player:WaitForChild("PlayerGui")
 
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-screenGui.Name = "PetAgeTool"
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui", PlayerGui)
+screenGui.Name = "PetAgeToolUI"
 screenGui.ResetOnSpawn = false
 
--- UI Frame
+-- Create Frame
 local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 240, 0, 130)
-frame.Position = UDim2.new(0.4, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(0, 128, 128)
-frame.BackgroundTransparency = 0.05
+frame.Size = UDim2.new(0, 260, 0, 140)
+frame.Position = UDim2.new(0.37, 0, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 
 -- Title
 local title = Instance.new("TextLabel", frame)
-title.Text = "🐾 Pet Age Changer"
-title.Font = Enum.Font.FredokaOne
-title.TextSize = 20
-title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundTransparency = 1
+title.Text = "🐾 Set Pet Age to 50"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
 
--- Pet Info
-local petInfo = Instance.new("TextLabel", frame)
-petInfo.Text = "Equipped Pet: [None]"
-petInfo.Font = Enum.Font.Gotham
-petInfo.TextSize = 16
-petInfo.TextColor3 = Color3.fromRGB(255, 255, 160)
-petInfo.BackgroundTransparency = 1
-petInfo.Position = UDim2.new(0, 0, 0, 30)
-petInfo.Size = UDim2.new(1, 0, 0, 25)
-petInfo.TextScaled = true
-petInfo.TextWrapped = true
+-- Description
+local desc = Instance.new("TextLabel", frame)
+desc.Text = "Applies to your equipped pet"
+desc.Size = UDim2.new(1, -20, 0, 20)
+desc.Position = UDim2.new(0.05, 0, 0.3, 0)
+desc.Font = Enum.Font.Gotham
+desc.TextSize = 14
+desc.TextColor3 = Color3.fromRGB(180, 180, 180)
+desc.BackgroundTransparency = 1
+desc.TextWrapped = true
 
--- Age Button
+-- Launch Button
 local button = Instance.new("TextButton", frame)
+button.Text = "🔥 Apply Age 50"
 button.Size = UDim2.new(0.9, 0, 0, 35)
-button.Position = UDim2.new(0.05, 0, 0.7, 0)
-button.BackgroundColor3 = Color3.fromRGB(0, 200, 150)
-button.Text = "Set Pet Age to 50"
+button.Position = UDim2.new(0.05, 0, 0.6, 0)
+button.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
 button.Font = Enum.Font.GothamBold
-button.TextColor3 = Color3.new(1, 1, 1)
 button.TextSize = 16
-button.AutoButtonColor = true
+button.TextColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", button).CornerRadius = UDim.new(0, 8)
-button.TextStrokeTransparency = 0.8
 
--- Logic to change age (stub logic, replace with your real method)
+-- Click Action
 button.MouseButton1Click:Connect(function()
-	local pet = player.Character and player.Character:FindFirstChild("EquippedPet")
-	if pet then
-		local age = pet:FindFirstChild("Age")
-		if age and age:IsA("IntValue") then
-			age.Value = 50
-			petInfo.Text = "Equipped Pet: " .. pet.Name .. " (Age set to 50)"
-		else
-			petInfo.Text = "Pet age attribute not found."
-		end
-	else
-		petInfo.Text = "No pet equipped."
-	end
+ button.Text = "Applying..."
+ pcall(function()
+  
+ end)
+ wait(1)
+ button.Text = "🔥 Apply Age 50"
 end)
