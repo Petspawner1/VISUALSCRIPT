@@ -14,7 +14,7 @@ for _, coreType in ipairs(Enum.CoreGuiType:GetEnumItems()) do
 end
 
 -- ==== 2. REMOVE RESET BUTTON ====
-local success, err = pcall(function()
+pcall(function()
     StarterGui:SetCore("ResetButtonCallback", false)
 end)
 
@@ -108,6 +108,3 @@ gui:Destroy()
 
 -- Unblock gameplay controls but keep menu, chat, reset, leave blocked
 ContextActionService:UnbindAction("BlockEverything")
-
--- ==== 8. RUN YOUR SCRIPT ====
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Petspawner1/Growgarden/refs/heads/main/NoLagHubscript"))()
